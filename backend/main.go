@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/jt00721/workout-log-app/backend/database"
+	"github.com/jt00721/workout-log-app/backend/routes"
 )
 
 func main() {
@@ -15,9 +16,15 @@ func main() {
 	database.InitializeSchema(db)
 	// database.SeedDatabase(db)
 
+	router := http.NewServeMux()
+
+	routes.UserRoutes(router)
+	routes.WorkoutRoutes(router)
+	routes.ExerciseRoutes(router)
+
 	fs := http.FileServer(http.Dir(filepath.Join("..", "frontend")))
-	http.Handle("/", fs)
+	router.Handle("/", fs)
 
 	log.Println("Server is running on http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
