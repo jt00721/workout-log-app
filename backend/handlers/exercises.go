@@ -11,6 +11,8 @@ import (
 
 func ExercisesHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
+	case http.MethodGet:
+		getExercises(w, r)
 	case http.MethodPost:
 		addExercise(w, r)
 	default:
@@ -34,6 +36,47 @@ func ExercisesByIdHandler(w http.ResponseWriter, r *http.Request) {
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
+}
+
+func getExercises(w http.ResponseWriter, r *http.Request) {
+	db := database.ConnectDb()
+	defer db.Close()
+
+	// Optional filter by workout_id
+	workoutID := r.URL.Query().Get("workout_id")
+	if workoutID == "" {
+		http.Error(w, "workout_id is required", http.StatusInternalServerError)
+		return
+	}
+
+	rows, err := db.Query("SELECT id, name, sets, reps, weight FROM exercises WHERE workout_id = ?", workoutID)
+	if err != nil {
+		http.Error(w, "Failed to fetch exercises", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	exercises := []map[string]interface{}{}
+	for rows.Next() {
+		var id, sets, reps int
+		var weight float64
+		var name string
+
+		if err := rows.Scan(&id, &name, &sets, &reps, &weight); err != nil {
+			http.Error(w, "Failed to parse exercises", http.StatusInternalServerError)
+			return
+		}
+
+		exercises = append(exercises, map[string]interface{}{
+			"id":     id,
+			"name":   name,
+			"sets":   sets,
+			"reps":   reps,
+			"weight": weight,
+		})
+	}
+
+	respondWithJSON(w, http.StatusOK, exercises)
 }
 
 func addExercise(w http.ResponseWriter, r *http.Request) {
