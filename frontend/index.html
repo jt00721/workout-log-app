@@ -4,8 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workout Log App</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Workout Log App</h1>
+    <header>
+        <h1>Workout Log App</h1>
+    </header>
+    <main>
+        <section id="workout-section">
+            <h2>Workouts</h2>
+            <div id="workout-list">
+                <!-- Dynamic list of workouts -->
+            </div>
+            <button id="add-workout-button">Add Workout</button>
+        </section>
+
+        <section id="exercise-section" style="display: none;">
+            <h2>Exercises</h2>
+            <div id="exercise-list">
+                <!-- Dynamic list of exercises -->
+            </div>
+            <button id="add-exercise-button">Add Exercise</button>
+        </section>
+
+        <section id="add-section" style="display: none;">
+            <h2 id="form-title">Add New Item</h2>
+            <form id="add-form">
+                <!-- Dynamic form for adding workouts or exercises -->
+            </form>
+        </section>
+    </main>
+    <script src="app.js" defer></script>
 </body>
 </html>
